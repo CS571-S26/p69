@@ -1,7 +1,7 @@
 import { Container, Nav, Navbar } from 'react-bootstrap'
 import { NavLink, Outlet } from 'react-router-dom'
 
-function Layout() {
+function Layout({ games, addGame }) {
   return (
     <>
       <Navbar bg="dark" variant="dark" expand="lg">
@@ -12,7 +12,7 @@ function Layout() {
           <Navbar.Toggle aria-controls="main-nav" />
           <Navbar.Collapse id="main-nav">
             <Nav className="ms-auto">
-              <Nav.Link as={NavLink} to="/">
+              <Nav.Link as={NavLink} to="/" end>
                 Home
               </Nav.Link>
               <Nav.Link as={NavLink} to="/post">
@@ -22,7 +22,7 @@ function Layout() {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <Outlet />
+      <Outlet context={{ games, addGame }} />
     </>
   )
 }
