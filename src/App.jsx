@@ -1,18 +1,17 @@
+import { Route, Routes } from 'react-router-dom'
+import Layout from './components/Layout.jsx'
+import CreateGamePage from './pages/CreateGamePage.jsx'
+import HomePage from './pages/HomePage.jsx'
 
 function App() {
   return (
-    <div>
-      <h1>PickupPal</h1>
-      <p>Find and join pickup games on campus!</p>
-
-      <h2>Upcoming Games</h2>
-      <ul>
-        <li>Basketball @ Nick - 5pm</li>
-        <li>Soccer @ Near West - 6pm</li>
-        <li>Volleyball @ Bakke - 7pm</li>
-      </ul>
-    </div>
-  );
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<HomePage />} />
+        <Route path="post" element={<CreateGamePage />} />
+      </Route>
+    </Routes>
+  )
 }
 
-export default App;
+export default App
