@@ -5,6 +5,7 @@ import CreateGamePage from './pages/CreateGamePage.jsx'
 import HomePage from './pages/HomePage.jsx'
 import AboutPage from './pages/AboutPage.jsx'
 import MyGamesPage from './pages/MyGamesPage.jsx'
+import GameDetailsPage from './pages/GameDetailsPage.jsx'
 
 function App() {
   const { games, addGame, joinedIds, toggleJoin } = useGames()
@@ -21,6 +22,7 @@ function App() {
         <Route path="post" element={<CreateGamePage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="mine" element={<MyGamesPage />} />
+        <Route path="games/:id" element={<GameDetailsPage />} />
       </Route>
     </Routes>
   )

@@ -1,4 +1,5 @@
-import { Badge, Card, ProgressBar } from 'react-bootstrap'
+import { Badge, Button, Card, ProgressBar } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 
 function formatWhen(isoString) {
   const d = new Date(isoString)
@@ -13,7 +14,7 @@ function formatWhen(isoString) {
 }
 
 function GameCard({ game }) {
-  const { sport, location, startsAt, skillLevel, maxPlayers, joinedCount } = game
+  const { id, sport, location, startsAt, skillLevel, maxPlayers, joinedCount } = game
   const full = joinedCount >= maxPlayers
   const pct = Math.min(100, Math.round((joinedCount / maxPlayers) * 100))
 
@@ -21,7 +22,11 @@ function GameCard({ game }) {
     <Card className="h-100 shadow-sm">
       <Card.Body>
         <div className="d-flex justify-content-between align-items-start gap-2 mb-2">
-          <Card.Title className="h5 mb-0">{sport}</Card.Title>
+          <Card.Title className="h5 mb-0" as="h3">
+            <Link to={`/games/${id}`} className="text-decoration-none text-body">
+              {sport}
+            </Link>
+          </Card.Title>
           <Badge bg={full ? 'secondary' : 'success'}>{full ? 'Full' : 'Open'}</Badge>
         </div>
         <Card.Subtitle className="text-muted mb-2">{location}</Card.Subtitle>
@@ -41,6 +46,9 @@ function GameCard({ game }) {
           label={`${joinedCount}/${maxPlayers}`}
           visuallyHidden
         />
+        <Button as={Link} to={`/games/${id}`} variant="outline-primary" size="sm" className="mt-3 w-100">
+          View details
+        </Button>
       </Card.Body>
     </Card>
   )
