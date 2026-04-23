@@ -1,6 +1,7 @@
 import { Badge, Button, Card, ProgressBar } from 'react-bootstrap'
 import { Link, useOutletContext } from 'react-router-dom'
 import JoinButton from './JoinButton.jsx'
+import SportIcon from './SportIcon.jsx'
 
 function formatWhen(isoString) {
   const d = new Date(isoString)
@@ -22,15 +23,20 @@ function GameCard({ game }) {
   const pct = Math.min(100, Math.round((joinedCount / maxPlayers) * 100))
 
   return (
-    <Card className="h-100 shadow-sm">
+    <Card className="game-card h-100 shadow-sm">
       <Card.Body>
         <div className="d-flex justify-content-between align-items-start gap-2 mb-2">
-          <Card.Title className="h5 mb-0" as="h3">
-            <Link to={`/games/${id}`} className="text-decoration-none text-body">
-              {sport}
-            </Link>
-          </Card.Title>
-          <Badge bg={full ? 'secondary' : 'success'}>{full ? 'Full' : 'Open'}</Badge>
+          <div className="d-flex align-items-start gap-2 min-w-0 flex-grow-1">
+            <SportIcon sport={sport} />
+            <Card.Title className="h5 mb-0 min-w-0" as="h3">
+              <Link to={`/games/${id}`} className="text-decoration-none text-body">
+                {sport}
+              </Link>
+            </Card.Title>
+          </div>
+          <Badge bg={full ? 'secondary' : 'success'} className="flex-shrink-0">
+            {full ? 'Full' : 'Open'}
+          </Badge>
         </div>
         <Card.Subtitle className="text-muted mb-2">{location}</Card.Subtitle>
         <Card.Text className="small mb-2">{formatWhen(startsAt)}</Card.Text>

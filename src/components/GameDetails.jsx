@@ -1,6 +1,7 @@
 import { Badge, Button, Col, ProgressBar, Row } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import JoinButton from './JoinButton.jsx'
+import SportIcon from './SportIcon.jsx'
 
 function formatWhen(isoString) {
   const d = new Date(isoString)
@@ -20,9 +21,12 @@ function GameDetails({ game, isJoined, isFull, onToggleJoin, onCopyLink, copied 
   return (
     <div className="text-start">
       <div className="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
-        <div>
-          <h1 className="h2 mb-2">{sport}</h1>
-          <p className="text-muted mb-0 fs-5">{location}</p>
+        <div className="d-flex align-items-start gap-3 min-w-0">
+          <SportIcon sport={sport} className="sport-icon-detail flex-shrink-0" />
+          <div className="min-w-0">
+            <h1 className="h2 mb-2">{sport}</h1>
+            <p className="text-muted mb-0 fs-5">{location}</p>
+          </div>
         </div>
         <Badge bg={isFull ? 'secondary' : 'success'} className="fs-6">
           {isFull ? 'Full' : 'Open'}
