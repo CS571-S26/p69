@@ -1,6 +1,7 @@
 import { Alert, Col, Container, Row } from 'react-bootstrap'
 import { useMemo, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
+import EmptyState from '../components/EmptyState.jsx'
 import FilterBar from '../components/FilterBar.jsx'
 import GameCard from '../components/GameCard.jsx'
 import Hero from '../components/Hero.jsx'
@@ -73,7 +74,9 @@ function HomePage() {
         {games.length === 0 ? (
           <Alert variant="info">No games posted yet. Be the first to post one!</Alert>
         ) : filtered.length === 0 ? (
-          <Alert variant="warning">No games match your search or filters. Try adjusting them.</Alert>
+          <EmptyState title="No games match your filters">
+            <p className="mb-0">Try a different search or change skill / open-spots options.</p>
+          </EmptyState>
         ) : (
           <Row xs={1} md={2} lg={3} className="g-3">
             {filtered.map((game) => (

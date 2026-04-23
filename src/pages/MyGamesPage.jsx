@@ -1,5 +1,6 @@
-import { Alert, Col, Container, Row } from 'react-bootstrap'
+import { Col, Container, Row } from 'react-bootstrap'
 import { Link, useOutletContext } from 'react-router-dom'
+import EmptyState from '../components/EmptyState.jsx'
 import GameCard from '../components/GameCard.jsx'
 
 function MyGamesPage() {
@@ -12,13 +13,14 @@ function MyGamesPage() {
       <h1 className="h2 mb-2">My games</h1>
       <p className="text-muted mb-4">Pickup games you’ve joined are listed here.</p>
       {myGames.length === 0 ? (
-        <Alert variant="info">
-          You’re not in any games yet. Browse the{' '}
-          <Link to="/" className="alert-link">
-            home page
-          </Link>{' '}
-          to find one.
-        </Alert>
+        <EmptyState title="You’re not in any games yet">
+          <p className="mb-0">
+            <Link to="/" className="text-decoration-none">
+              Go to the home page
+            </Link>{' '}
+            to browse and join a game.
+          </p>
+        </EmptyState>
       ) : (
         <Row xs={1} md={2} lg={3} className="g-3">
           {myGames.map((game) => (

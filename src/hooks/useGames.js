@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useReducer } from 'react'
 import { INITIAL_GAMES } from '../data/mockGames.js'
 
 const GAMES_KEY = 'pickuppal_games'
@@ -12,7 +12,7 @@ function readGames() {
       if (Array.isArray(parsed) && parsed.length) return parsed
     }
   } catch {
-    // ignore corrupt localStorage 
+    /* ignore corrupt localStorage */
   }
   return [...INITIAL_GAMES]
 }
@@ -25,42 +25,83 @@ function readJoinedIds() {
       if (Array.isArray(parsed)) return parsed
     }
   } catch {
-    // ignore corrupt localStorage 
+    /* ignore corrupt localStorage */
   }
   return []
 }
 
+function initState() {
+  return { games: readGames(), joinedIds: readJoinedIds() }
+}
+
+function gamesReducer(state, action) {
+  switch (action.type) {
+    case 'addGame':
+      return {
+        ...state,
+        games: [
+          ...state.games,
+          {
+            id: crypto.randomUUID(),
+            joinedCount: 1,
+            ...action.payload,
+          },
+        ],
+      }
+    case 'toggleJoin': {
+      const { gameId } = action
+      const game = state.games.find((g) => g.id === gameId)
+      if (!game) return state
+      const isJoined = state.joinedIds.includes(gameId)
+      if (isJoined) {
+        return {
+          ...state,
+          joinedIds: state.joinedIds.filter((id) => id !== gameId),
+          games: state.games.map((g) =>
+            g.id === gameId ? { ...g, joinedCount: Math.max(0, g.joinedCount - 1) } : g,
+          ),
+        }
+      }
+      if (game.joinedCount >= game.maxPlayers) return state
+      return {
+        ...state,
+        joinedIds: [...state.joinedIds, gameId],
+        games: state.games.map((g) =>
+          g.id === gameId ? { ...g, joinedCount: g.joinedCount + 1 } : g,
+        ),
+      }
+    }
+    default:
+      return state
+  }
+}
+
 export function useGames() {
-  const [games, setGames] = useState(readGames)
-  const [joinedIds, setJoinedIds] = useState(readJoinedIds)
+  const [{ games, joinedIds }, dispatch] = useReducer(gamesReducer, null, initState)
 
   useEffect(() => {
-    localStorage.setItem(GAMES_KEY, JSON.stringify(games))
+    try {
+      localStorage.setItem(GAMES_KEY, JSON.stringify(games))
+    } catch {
+      /* ignore quota / private mode */
+    }
   }, [games])
 
   useEffect(() => {
-    localStorage.setItem(JOINED_KEY, JSON.stringify(joinedIds))
+    try {
+      localStorage.setItem(JOINED_KEY, JSON.stringify(joinedIds))
+    } catch {
+      /* ignore */
+    }
   }, [joinedIds])
 
   const addGame = useCallback((payload) => {
-    setGames((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        joinedCount: 1,
-        ...payload,
-      },
-    ])
+    dispatch({ type: 'addGame', payload })
   }, [])
 
   const toggleJoin = useCallback((gameId) => {
-    setJoinedIds((prev) => {
-      if (prev.includes(gameId)) {
-        return prev.filter((id) => id !== gameId)
-      }
-      return [...prev, gameId]
-    })
+    dispatch({ type: 'toggleJoin', gameId })
   }, [])
 
-  return { games, setGames, addGame, joinedIds, toggleJoin }
+  return { games, addGame, joinedIds, toggleJoin }
 }

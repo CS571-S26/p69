@@ -1,5 +1,6 @@
 import { Badge, Button, Card, ProgressBar } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Link, useOutletContext } from 'react-router-dom'
+import JoinButton from './JoinButton.jsx'
 
 function formatWhen(isoString) {
   const d = new Date(isoString)
@@ -15,6 +16,8 @@ function formatWhen(isoString) {
 
 function GameCard({ game }) {
   const { id, sport, location, startsAt, skillLevel, maxPlayers, joinedCount } = game
+  const { joinedIds, toggleJoin } = useOutletContext()
+  const isJoined = joinedIds.includes(id)
   const full = joinedCount >= maxPlayers
   const pct = Math.min(100, Math.round((joinedCount / maxPlayers) * 100))
 
@@ -46,7 +49,14 @@ function GameCard({ game }) {
           label={`${joinedCount}/${maxPlayers}`}
           visuallyHidden
         />
-        <Button as={Link} to={`/games/${id}`} variant="outline-primary" size="sm" className="mt-3 w-100">
+        <JoinButton
+          isJoined={isJoined}
+          isFull={full}
+          onToggle={() => toggleJoin(id)}
+          size="sm"
+          className="mt-3 w-100"
+        />
+        <Button as={Link} to={`/games/${id}`} variant="outline-primary" size="sm" className="mt-2 w-100">
           View details
         </Button>
       </Card.Body>

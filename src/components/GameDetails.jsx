@@ -1,5 +1,6 @@
 import { Badge, Button, Col, ProgressBar, Row } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import JoinButton from './JoinButton.jsx'
 
 function formatWhen(isoString) {
   const d = new Date(isoString)
@@ -16,9 +17,6 @@ function formatWhen(isoString) {
 function GameDetails({ game, isJoined, isFull, onToggleJoin, onCopyLink, copied }) {
   const { sport, location, startsAt, skillLevel, maxPlayers, joinedCount, id } = game
   const pct = Math.min(100, Math.round((joinedCount / maxPlayers) * 100))
-  const joinDisabled = !isJoined && isFull
-  const joinLabel = isJoined ? 'Leave' : isFull ? 'Full' : 'Join'
-
   return (
     <div className="text-start">
       <div className="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
@@ -62,14 +60,7 @@ function GameDetails({ game, isJoined, isFull, onToggleJoin, onCopyLink, copied 
       </div>
 
       <div className="d-flex flex-wrap gap-2 mt-4">
-        <Button
-          type="button"
-          variant={isJoined ? 'outline-danger' : 'primary'}
-          onClick={onToggleJoin}
-          disabled={joinDisabled}
-        >
-          {joinLabel}
-        </Button>
+        <JoinButton isJoined={isJoined} isFull={isFull} onToggle={onToggleJoin} />
         <Button type="button" variant="outline-secondary" onClick={onCopyLink}>
           {copied ? 'Link copied' : 'Copy link'}
         </Button>
