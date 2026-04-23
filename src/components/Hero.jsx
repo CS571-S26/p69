@@ -7,7 +7,7 @@ function Hero() {
       <Container>
         <Row className="align-items-center gy-4">
           <Col md={7} className="text-md-start text-center">
-            <h1 className="display-5 fw-semibold mb-3">Find your next pickup game</h1>
+            <h1 className="display-5 fw-semibold mb-3 text-black">Find your next pickup game</h1>
             <p className="lead text-muted mb-4">
               Browse games near you, post your own, and meet people who want to play.
             </p>
