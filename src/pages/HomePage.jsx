@@ -1,16 +1,17 @@
 import { Alert, Col, Container, Row } from 'react-bootstrap'
 import { useOutletContext } from 'react-router-dom'
 import GameCard from '../components/GameCard.jsx'
+import Hero from '../components/Hero.jsx'
 
 function HomePage() {
   const { games } = useOutletContext()
 
   return (
-    <Container className="py-4">
-      <h1 className="h2">PickupPal</h1>
-      <p className="lead">Find and join pickup games on campus!</p>
-
-      <h2 className="h4 mt-4 mb-3">Upcoming games</h2>
+    <>
+      <Hero />
+      <Container className="py-2 pb-4">
+      <h2 className="h3 mb-2">Upcoming games</h2>
+      <p className="text-muted mb-4">Find and join pickup games on campus.</p>
       {games.length === 0 ? (
         <Alert variant="info">No games posted yet. Be the first to post one!</Alert>
       ) : (
@@ -23,6 +24,7 @@ function HomePage() {
         </Row>
       )}
     </Container>
+    </>
   )
 }
 

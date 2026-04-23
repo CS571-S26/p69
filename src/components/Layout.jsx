@@ -1,9 +1,10 @@
 import { Container, Nav, Navbar } from 'react-bootstrap'
 import { NavLink, Outlet } from 'react-router-dom'
+import Footer from './Footer.jsx'
 
 function Layout({ games, addGame }) {
   return (
-    <>
+    <div className="d-flex flex-column min-vh-100">
       <Navbar bg="dark" variant="dark" expand="lg">
         <Container>
           <Navbar.Brand as={NavLink} to="/">
@@ -18,12 +19,18 @@ function Layout({ games, addGame }) {
               <Nav.Link as={NavLink} to="/post">
                 Post a game
               </Nav.Link>
+              <Nav.Link as={NavLink} to="/about">
+                About
+              </Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <Outlet context={{ games, addGame }} />
-    </>
+      <main className="flex-grow-1">
+        <Outlet context={{ games, addGame }} />
+      </main>
+      <Footer />
+    </div>
   )
 }
 
