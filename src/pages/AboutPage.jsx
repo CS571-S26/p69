@@ -14,8 +14,8 @@ function AboutPage() {
     <Container className="py-4 text-start">
       <h1 className="h2 mb-3">About PickupPal</h1>
       <p className="lead text-muted mb-4">
-        PickupPal helps students find casual sports games on campus—basketball, soccer, volleyball,
-        and more—without endless group chats.
+        PickupPal helps students find casual sports games on campus (basketball, soccer, volleyball,
+        and more) without endless group chats.
       </p>
 
       <Row className="g-4 mb-4">
