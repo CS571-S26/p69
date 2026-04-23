@@ -12,7 +12,7 @@ function readGames() {
       if (Array.isArray(parsed) && parsed.length) return parsed
     }
   } catch {
-   
+    // ignore corrupt localStorage 
   }
   return [...INITIAL_GAMES]
 }
@@ -25,7 +25,7 @@ function readJoinedIds() {
       if (Array.isArray(parsed)) return parsed
     }
   } catch {
-
+    // ignore corrupt localStorage 
   }
   return []
 }
