@@ -18,11 +18,14 @@ function AboutPage() {
         and more) without endless group chats.
       </p>
 
+      <h2 className="h4 mb-3">At a glance</h2>
       <Row className="g-4 mb-4">
         <Col md={6}>
           <Card className="h-100 shadow-sm">
             <Card.Body>
-              <Card.Title className="h5">Mission</Card.Title>
+              <Card.Title className="h5" as="h3">
+                Mission
+              </Card.Title>
               <Card.Text>
                 We want getting a game together to be as easy as checking the weather: see what’s
                 happening, join what fits, or start something new.
@@ -33,7 +36,9 @@ function AboutPage() {
         <Col md={6}>
           <Card className="h-100 shadow-sm">
             <Card.Body>
-              <Card.Title className="h5">Tech stack</Card.Title>
+              <Card.Title className="h5" as="h3">
+                Tech stack
+              </Card.Title>
               <div className="d-flex flex-wrap gap-2">
                 {stack.map((item) => (
                   <Badge key={item} bg="primary" className="fw-normal">

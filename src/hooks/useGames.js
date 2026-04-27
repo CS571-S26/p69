@@ -36,18 +36,21 @@ function initState() {
 
 function gamesReducer(state, action) {
   switch (action.type) {
-    case 'addGame':
+    case 'addGame': {
+      const id = crypto.randomUUID()
       return {
         ...state,
+        joinedIds: [...state.joinedIds, id],
         games: [
           ...state.games,
           {
-            id: crypto.randomUUID(),
+            id,
             joinedCount: 1,
             ...action.payload,
           },
         ],
       }
+    }
     case 'toggleJoin': {
       const { gameId } = action
       const game = state.games.find((g) => g.id === gameId)

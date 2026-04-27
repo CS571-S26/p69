@@ -34,8 +34,9 @@ function GameDetailsPage() {
   if (!game) {
     return (
       <Container className="py-4 text-start">
-        <Alert variant="warning">
-          We couldn’t find that game.{' '}
+        <h1 className="h4">Game not found</h1>
+        <Alert variant="warning" className="mb-0">
+          We couldn’t find a game for this link.{' '}
           <Link to="/" className="alert-link">
             Back to home
           </Link>
