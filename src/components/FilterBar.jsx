@@ -10,21 +10,22 @@ const SKILLS = [
 function FilterBar({ skillFilter, onSkillFilterChange, openOnly, onOpenOnlyChange }) {
   return (
     <div className="d-flex flex-column flex-md-row align-items-md-center gap-3 flex-wrap">
-      <div>
-        <div className="small text-muted mb-1">Skill level</div>
-        <ButtonGroup size="sm" className="flex-wrap" role="group" aria-label="Filter by skill">
+      <fieldset className="border-0 p-0 m-0 min-w-0">
+        <legend className="small text-muted mb-1">Skill level</legend>
+        <ButtonGroup size="sm" className="flex-wrap" role="group" aria-label="Filter games by skill level">
           {SKILLS.map(({ value, label }) => (
             <Button
               key={value}
               type="button"
               variant={skillFilter === value ? 'primary' : 'outline-secondary'}
+              aria-pressed={skillFilter === value}
               onClick={() => onSkillFilterChange(value)}
             >
               {label}
             </Button>
           ))}
         </ButtonGroup>
-      </div>
+      </fieldset>
       <Form.Check
         type="checkbox"
         id="open-only"

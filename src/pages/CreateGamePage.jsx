@@ -1,6 +1,13 @@
 import { Button, Col, Container, Form, Row } from 'react-bootstrap'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { useNavigate, useOutletContext } from 'react-router-dom'
+
+function localYmd(d = new Date()) {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
 
 function combineDateAndTime(gameDate, hour12, minuteStr, meridiem) {
   if (!gameDate) return null
@@ -34,18 +41,27 @@ const emptyForm = () => ({
 })
 
 function CreateGamePage() {
+  const uid = useId()
+  const timeHelpId = `post-time-help-${uid}`
+  const timeErrorId = `post-time-err-${uid}`
+  const hourId = `post-hour-${uid}`
+  const minuteId = `post-minute-${uid}`
+  const meridiemId = `post-meridiem-${uid}`
+
   const { addGame } = useOutletContext()
   const navigate = useNavigate()
   const [form, setForm] = useState(emptyForm)
   const [validated, setValidated] = useState(false)
-  const [timeInvalid, setTimeInvalid] = useState(false)
+  const [timeError, setTimeError] = useState(null)
+  const minDate = localYmd()
+  const timeDescribedBy = [timeHelpId, timeError ? timeErrorId : null].filter(Boolean).join(' ')
 
   function handleChange(field) {
     return (e) => {
       const { value } = e.target
       setForm((prev) => ({ ...prev, [field]: value }))
       if (['minute', 'hour12', 'meridiem', 'gameDate'].includes(field)) {
-        setTimeInvalid(false)
+        setTimeError(null)
       }
     }
   }
@@ -59,6 +75,11 @@ function CreateGamePage() {
       return
     }
 
+    if (form.gameDate && form.gameDate < minDate) {
+      setValidated(true)
+      return
+    }
+
     const maxPlayers = Number.parseInt(form.maxPlayers, 10)
     if (Number.isNaN(maxPlayers) || maxPlayers < 2) {
       setValidated(true)
@@ -68,7 +89,13 @@ function CreateGamePage() {
     const when = combineDateAndTime(form.gameDate, form.hour12, form.minute, form.meridiem)
     if (!when) {
       setValidated(true)
-      setTimeInvalid(true)
+      setTimeError('format')
+      return
+    }
+
+    if (when.getTime() < Date.now()) {
+      setValidated(true)
+      setTimeError('past')
       return
     }
 
@@ -82,7 +109,7 @@ function CreateGamePage() {
 
     setForm(emptyForm())
     setValidated(false)
-    setTimeInvalid(false)
+    setTimeError(null)
     navigate('/')
   }
 
@@ -129,56 +156,78 @@ function CreateGamePage() {
                 required
                 type="date"
                 value={form.gameDate}
+                min={minDate}
                 onChange={handleChange('gameDate')}
-                isInvalid={validated && !form.gameDate}
+                isInvalid={validated && (!form.gameDate || form.gameDate < minDate)}
               />
-              <Form.Control.Feedback type="invalid">Choose the day of the game.</Form.Control.Feedback>
+              <Form.Control.Feedback type="invalid">
+                {form.gameDate && form.gameDate < minDate
+                  ? 'Pick today or a future date.'
+                  : 'Choose the day of the game.'}
+              </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group controlId="hour12" className="mt-3">
-              <Form.Label>Time</Form.Label>
+            <fieldset className="mt-3 border-0 p-0 m-0 min-w-0">
+              <legend className="form-label col-form-label fs-6 p-0 mb-0">Time</legend>
               <Row className="g-2 align-items-end">
                 <Col xs={4}>
                   <Form.Control
+                    id={hourId}
                     type="number"
                     min={1}
                     max={12}
                     value={form.hour12}
                     onChange={handleChange('hour12')}
-                    aria-label="Hour, 1 to 12"
+                    name="timeHour12"
+                    aria-label="Hour from 1 to 12"
+                    aria-invalid={timeError != null}
+                    aria-describedby={timeDescribedBy}
+                    inputMode="numeric"
                   />
                 </Col>
-                <Col xs={1} className="text-center pb-2">
+                <Col xs={1} className="text-center pb-2" aria-hidden="true">
                   :
                 </Col>
                 <Col xs={3}>
                   <Form.Control
+                    id={minuteId}
                     type="number"
                     min={0}
                     max={59}
                     value={form.minute}
                     onChange={handleChange('minute')}
-                    isInvalid={timeInvalid}
-                    aria-label="Minute, 0 to 59"
+                    name="timeMinute"
+                    isInvalid={timeError != null}
+                    aria-label="Minutes from 0 to 59"
+                    aria-describedby={timeDescribedBy}
+                    inputMode="numeric"
                   />
                 </Col>
                 <Col xs={4}>
                   <Form.Select
+                    id={meridiemId}
                     value={form.meridiem}
                     onChange={handleChange('meridiem')}
+                    name="timeMeridiem"
                     aria-label="AM or PM"
+                    aria-invalid={timeError != null}
+                    aria-describedby={timeDescribedBy}
                   >
                     <option value="AM">AM</option>
                     <option value="PM">PM</option>
                   </Form.Select>
                 </Col>
               </Row>
-              <Form.Text className="d-block mt-1">
+              <p id={timeHelpId} className="form-text d-block mt-1 mb-0 text-muted small">
                 12-hour time (e.g. 5 : 30 with PM = 5:30 PM). Local time zone.
-              </Form.Text>
-              {timeInvalid && (
-                <div className="text-danger small mt-1">Use hour 1–12 and minute 0–59.</div>
+              </p>
+              {timeError && (
+                <div id={timeErrorId} className="text-danger small mt-1" role="alert">
+                  {timeError === 'past'
+                    ? 'The game must start in the future. Use a later time, or a later day.'
+                    : 'Use hour 1–12 and minute 0–59.'}
+                </div>
               )}
-            </Form.Group>
+            </fieldset>
           </Col>
           <Col md={6}>
             <Form.Group controlId="skillLevel">
