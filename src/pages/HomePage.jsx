@@ -1,11 +1,16 @@
 import { Alert, Col, Container, Row } from 'react-bootstrap'
 import { useMemo, useState } from 'react'
-import { useOutletContext } from 'react-router-dom'
+import { useLocation, useNavigate, useOutletContext } from 'react-router-dom'
 import EmptyState from '../components/EmptyState.jsx'
 import FilterBar from '../components/FilterBar.jsx'
 import GameCard from '../components/GameCard.jsx'
 import Hero from '../components/Hero.jsx'
+import HowItWorks from '../components/HowItWorks.jsx'
 import SearchBar from '../components/SearchBar.jsx'
+
+function isUpcomingStart(iso) {
+  return new Date(iso).getTime() > Date.now()
+}
 
 function filterGames(games, query, skillFilter, openOnly) {
   const q = query.trim().toLowerCase()
@@ -23,33 +28,70 @@ function filterGames(games, query, skillFilter, openOnly) {
 
 function HomePage() {
   const { games } = useOutletContext()
+  const location = useLocation()
+  const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [skillFilter, setSkillFilter] = useState('all')
   const [openOnly, setOpenOnly] = useState(false)
+  const postedFromForm =
+    location.state?.posted === true && typeof location.state?.sport === 'string'
+      ? location.state.sport
+      : null
+
+  const upcomingGames = useMemo(
+    () => games.filter((g) => isUpcomingStart(g.startsAt)),
+    [games],
+  )
+
+  const { openCount, total } = useMemo(() => {
+    const openC = upcomingGames.filter((g) => g.joinedCount < g.maxPlayers).length
+    return { openCount: openC, total: upcomingGames.length }
+  }, [upcomingGames])
 
   const filtered = useMemo(
-    () => filterGames(games, query, skillFilter, openOnly),
-    [games, query, skillFilter, openOnly],
+    () => filterGames(upcomingGames, query, skillFilter, openOnly),
+    [upcomingGames, query, skillFilter, openOnly],
   )
 
   const hasFilters = query.trim() !== '' || skillFilter !== 'all' || openOnly
   const resultLabel = (() => {
-    if (games.length === 0) return null
+    if (upcomingGames.length === 0) return null
     if (hasFilters) {
-      return `Showing ${filtered.length} of ${games.length} game${games.length === 1 ? '' : 's'}`
+      return `Showing ${filtered.length} of ${upcomingGames.length} game${
+        upcomingGames.length === 1 ? '' : 's'
+      }`
     }
-    return `${games.length} game${games.length === 1 ? '' : 's'}`
+    return `${upcomingGames.length} game${upcomingGames.length === 1 ? '' : 's'}`
   })()
 
   return (
     <>
       <Hero />
       <Container className="py-2 pb-4">
-        <h2 className="h3 mb-2">Upcoming games</h2>
-        <p className="text-muted mb-3">Find and join pickup games on campus.</p>
+        {postedFromForm && (
+          <Alert
+            variant="success"
+            dismissible
+            onClose={() => navigate(location.pathname, { replace: true, state: {} })}
+            className="text-start"
+          >
+            <strong>Game posted.</strong> {postedFromForm} is on the list and you are in as the
+            first player.
+          </Alert>
+        )}
 
-        {games.length > 0 && (
-          <div className="mb-4 p-3 rounded border bg-body-secondary bg-opacity-25">
+        <HowItWorks />
+
+        <h2 className="h3 mb-2">Upcoming games</h2>
+        <p className="text-secondary mb-2">Find and join pickup games on campus.</p>
+        {total > 0 && (
+          <p className="small text-secondary mb-3" role="status">
+            {total} {total === 1 ? 'game' : 'games'} total · {openCount} with open spots
+          </p>
+        )}
+
+        {upcomingGames.length > 0 && (
+          <div className="mb-4 p-3 rounded border bg-body-tertiary bg-opacity-25">
             <Row className="g-3 align-items-end">
               <Col md>
                 <SearchBar value={query} onChange={setQuery} />
@@ -64,7 +106,7 @@ function HomePage() {
               </Col>
             </Row>
             {resultLabel && (
-              <p className="text-muted small mb-0 mt-2" role="status">
+              <p className="text-secondary small mb-0 mt-2" role="status">
                 {resultLabel}
               </p>
             )}
@@ -73,6 +115,11 @@ function HomePage() {
 
         {games.length === 0 ? (
           <Alert variant="info">No games posted yet. Be the first to post one!</Alert>
+        ) : upcomingGames.length === 0 ? (
+          <Alert variant="info">
+            No upcoming games. The start time has passed for every game in your list, or you can
+            post a new one.
+          </Alert>
         ) : filtered.length === 0 ? (
           <EmptyState title="No games match your filters">
             <p className="mb-0">Try a different search or change skill / open-spots options.</p>

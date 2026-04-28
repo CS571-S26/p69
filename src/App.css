@@ -27,6 +27,17 @@
   line-height: 1;
 }
 
+.share-id-text {
+  color: #000;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  .share-id-text {
+    color: var(--bs-body-color);
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .hero-section {
     box-shadow: inset 0 -1px 0 var(--bs-border-color-translucent, rgba(255, 255, 255, 0.1));

@@ -99,8 +99,9 @@ function CreateGamePage() {
       return
     }
 
+    const sportName = form.sport.trim()
     addGame({
-      sport: form.sport.trim(),
+      sport: sportName,
       location: form.location.trim(),
       startsAt: when.toISOString(),
       skillLevel: form.skillLevel,
@@ -110,7 +111,7 @@ function CreateGamePage() {
     setForm(emptyForm())
     setValidated(false)
     setTimeError(null)
-    navigate('/')
+    navigate('/', { state: { posted: true, sport: sportName } })
   }
 
   return (
